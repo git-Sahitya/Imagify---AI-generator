@@ -9,7 +9,7 @@ const Footer = () => {
     >
       <img src={assets.logo} alt="" width={150} />
       <p
-        className="flex-1  border-gray-400
+        className="flex-1 border-l border-gray-400
        pl-4 text-sm text-gray-500 max-sm:hidden"
       >
         Copyright @Sahitya Singh | All right reserved.
