@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import userRouter from "./routes/user.route.js";
+import imageRouter from "./routes/image.route.js";
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 await connectDB();
 
 app.use('/api/user' , userRouter)
+app.use('/api/image' , imageRouter)
 app.get("/", (req, res) => {
   res.send("API working");
 });
