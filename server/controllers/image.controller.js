@@ -4,7 +4,8 @@ import axios from "axios";
 
 export const generateImage = async (req, res) => {
   try {
-    const { userId, prompt } = req.body;
+     const prompt = req.body.prompt;
+    const userId = req.user.id;
 
     const user = await userModel.findById(userId);
     if (!user || !prompt) {
@@ -14,7 +15,7 @@ export const generateImage = async (req, res) => {
       });
     }
 
-    if (user.creditBalance === 0 || userModel.creditBalance < 0) {
+    if (user.creditBalance === 0 || user.creditBalance < 0) {
       return res.json({
         success: false,
         message: "No Credit Balance",
@@ -37,7 +38,7 @@ export const generateImage = async (req, res) => {
     );
 
     const base64Image = Buffer.from(data, "binary").toString("base64");
-    const resultImage = `data:image/png:base64,${base64Image}`;
+    const resultImage = `data:image/png;base64,${base64Image}`;
 
     await userModel.findByIdAndUpdate(user._id, {
       creditBalance: user.creditBalance - 1,
