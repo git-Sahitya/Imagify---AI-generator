@@ -1,7 +1,7 @@
 import userModel from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import razorpay from "razorpay";
+import Razorpay from "razorpay";
 import transactionModel from "../models/transaction.model.js";
 
 const registerUser = async (req, res) => {
@@ -71,14 +71,16 @@ const userCredits = async (req, res) => {
   }
 };
 
-const razorpayInstance = new razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
-
 const paymentRazorpay = async (req, res) => {
   try {
+    const razorpayInstance = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
     const { userId, planId } = req.body;
+
+    // const userId = req.user.id;
+    // const { planId } = req.body;
 
     const userData = await userModel.findById(userId);
 
@@ -145,4 +147,4 @@ const paymentRazorpay = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, userCredits , paymentRazorpay };
+export { registerUser, loginUser, userCredits, paymentRazorpay };
