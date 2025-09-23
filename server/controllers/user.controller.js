@@ -77,10 +77,10 @@ const paymentRazorpay = async (req, res) => {
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
-    const { userId, planId } = req.body;
+    // const { userId, planId } = req.body;
 
-    // const userId = req.user.id;
-    // const { planId } = req.body;
+    const userId = req.user.id;
+    const { planId } = req.body;
 
     const userData = await userModel.findById(userId);
 
@@ -146,5 +146,35 @@ const paymentRazorpay = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+const verifyRazorpay = async (req, res) => {
+  try {
+    const { razorpay_order_id } = req.body;
+    const orderInfo = await razorpayInstance.order.fetch(razorpay_order_id);
 
-export { registerUser, loginUser, userCredits, paymentRazorpay };
+    if (orderInfo.status === "paid") {
+      const transactionData = await transactionModel.findById(
+        orderInfo.receipt
+      );
+      if (transactionData.payment) {
+        return res.json({ success: false, message: "Payment Failed" });
+      }
+      const userData = await userModel.findById(transactionData.userId);
+
+      const creditBalance = userData.creditBalance + transactionData.credits;
+      await userModel.findByIdAndUpdate(userData._id, { creditBalance });
+
+      await transactionModel.findByIdAndUpdate(transactionData._id, {
+        payment: true,
+      });
+
+      res.json({ success: true, message: "Credits Added" });
+    } else {
+      res.json({ success: false, message: "Payment Failed" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export { registerUser, loginUser, userCredits, paymentRazorpay ,verifyRazorpay };

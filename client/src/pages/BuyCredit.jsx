@@ -22,7 +22,18 @@ const BuyCredit = () => {
       order_id: order.id,
       receipt: order.receipt,
       handler: async (response) => {
-        console.log(response);
+        try {
+          const {data} = await axios.post(backendUrl + '/api/user/verify-razor' , 
+            response , {headers:{token}}
+          )
+          if (data.success) {
+            loadCreditData()
+            navigate('/')
+            toast.success("Credit Added")
+          }
+        } catch (error) {
+          toast.error(error.message)
+        }
       },
     };
     const rzp = new window.Razorpay(options)
@@ -82,8 +93,8 @@ const BuyCredit = () => {
             </p>
             <button
               onClick={() => paymentRazorPay(item.id)}
-              className="w-full bg-gray-800 text-white mt-8 text-sm
-             rounded-md py-2.5 min-w-52"
+              className="w-full bg-gray-800 cursor-pointer text-white mt-8 text-sm
+             rounded-md py-2.5 min-w-52 "
             >
               {user ? "Purchase" : "Get Started"}
             </button>
